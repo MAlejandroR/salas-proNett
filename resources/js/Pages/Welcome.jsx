@@ -422,7 +422,8 @@ export default function Welcome({ auth, laravelVersion, phpVersion, salas }) {
                                 {salasData
                                     .sort((a, b) => a.sala.localeCompare(b.sala))
                                     .map((sala, index) => (
-                                        <tr key={index} onClick={() => handleSalaClick(sala.id)}>
+                                        <tr key={index} onClick={() => handleSalaClick(sala.id)}
+                                        className="hover-effect">
                                             <td style={{ cursor: 'pointer' }}>{sala.sala}</td>
                                             <td>{sala.provincia}</td>
                                             <td>{sala.municipio}</td>

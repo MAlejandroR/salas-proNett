@@ -25,19 +25,19 @@ Route::get('/salas', [SalaController::class, 'index']);
 Route::get('/salas/{id}', [SalaController::class, 'show'])->name('sala.show');
 
 
-Route::get('/welcome', function () {
+Route::get('/', function () {
     $salas = App\Models\Sala::all();
     return Inertia::render('Welcome', ['salas' => $salas]);
 })->name('welcome');
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+//Route::get('/', function () {
+//    return Inertia::render('Welcome', [
+//        'canLogin' => Route::has('login'),
+//        'canRegister' => Route::has('register'),
+//        'laravelVersion' => Application::VERSION,
+//        'phpVersion' => PHP_VERSION,
+//    ]);
+//});
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

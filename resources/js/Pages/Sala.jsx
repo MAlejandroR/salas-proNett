@@ -6,19 +6,18 @@ const Show = ({ sala }) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                const data = await WeatherService.getWeatherByMunicipality('01', '01001'); // Ejemplo con provinciaId y municipioId
-                setWeatherData(data);
-            } catch (error) {
-                console.error('Error fetching weather data:', error);
-            }
-        };
+            const data = fetch('/api/weather/01/01001')
+                .then(response => response.json())
+                .then(data => setWeatherData(data))
+                .catch(error => console.error('Error fetching weather data:', error));
+        }
 
         fetchData();
     }, []);
     return (
-        <div className="container">
-            <h1>{sala.sala}</h1>
+        <div className="container ">
+            <h1 >
+                {sala.sala}</h1>
             <div className="salaPage">
                 <table>
                     <tbody>

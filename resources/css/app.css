@@ -1075,3 +1075,8 @@ button.reset-btn {
     margin-top: 2rem;
 
 }
+.hover-effect:hover {
+    background-color: #343a40; /* Un gris oscuro, similar a bg-gray-800 en Tailwind */
+    color: #ffffff; /* Hace el texto blanco */
+    cursor: pointer; /* Cambia el cursor a un puntero */
+}
