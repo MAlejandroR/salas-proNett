@@ -11,7 +11,8 @@ class SalaController extends Controller
     public function index()
     {
         $salas = Sala::all();
-        return (Inertia::render("Welcome", compact("salas")));
+        $user = auth()->user();
+        return (Inertia::render("Welcome", compact("salas", "user")));
     }
 
     public function show($id)

@@ -21,13 +21,16 @@ use App\Http\Controllers\SalaController;
 
 
 Route::get('/salas', [SalaController::class, 'index']);
+Route::get('/addfavoritos/{user}/{sala}', [\App\Http\Controllers\FavoritosController::class, 'add_favorito']);
+Route::get('/delfavoritos/{user}/{sala}', [\App\Http\Controllers\FavoritosController::class, 'del_favorito']);
 
 Route::get('/salas/{id}', [SalaController::class, 'show'])->name('sala.show');
 
 
 Route::get('/', function () {
     $salas = App\Models\Sala::all();
-    return Inertia::render('Welcome', ['salas' => $salas]);
+    $user = auth()->user();
+    return Inertia::render('Welcome', compact("salas","user"));
 })->name('welcome');
 
 //Route::get('/', function () {
@@ -40,7 +43,10 @@ Route::get('/', function () {
 //});
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    $user = auth()->user();
+    $salas = $user->salas();
+
+    return Inertia::render('Dashboard',compact('user','salas'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

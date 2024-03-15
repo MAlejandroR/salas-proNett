@@ -3,9 +3,8 @@ services:
   mysql:
     image: mysql
     volumes:
-      - ./datos:/var/lib/mysql
-      - ./bd.sql:/docker-entrypoint-initdb.d/datos.sql
-      - ./salas_de_concierto.csv:/docker-entrypoint-initdb.d/salas.csv
+      - ./datos1:/var/lib/mysql
+      - ./mysql.sql:/docker-entrypoint-initdb.d/datos.sql
     ports:
       - ${DB_PORT}:3306
     environment:

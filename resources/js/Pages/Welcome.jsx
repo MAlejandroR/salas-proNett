@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { Link, Head } from '@inertiajs/react';
+import React, {useState} from 'react';
+import {Link, Head} from '@inertiajs/react';
 
-export default function Welcome({ auth, laravelVersion, phpVersion, salas }) {
+export default function Welcome({user, laravelVersion, phpVersion, salas}) {
+
     const [salasData, setSalasData] = useState(salas || []);
     const [salaSeleccionada, setSalaSeleccionada] = useState('');
     const [provinciaSeleccionada, setProvinciaSeleccionada] = useState('');
@@ -13,10 +14,35 @@ export default function Welcome({ auth, laravelVersion, phpVersion, salas }) {
     const [generoBloqueado, setGeneroBloqueado] = useState(false);
     const [aforoBloqueado, setAforoBloqueado] = useState(false);
     const [mostrarTabla, setMostrarTabla] = useState(false);
-
+    const handleFavoritoChange = (event, salaId) => {
+        const id = user.id;
+        const isChecked = event.target.checked; //Si está o no checkeado
+        let ruta = isChecked ? "/addfavoritos" : "/delfavoritos";
+        ruta += `/${id}/${salaId}`;
+        fetch(ruta, {
+            method: "GET",
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest', // Necesario si estás usando Laravel para evitar el Middleware de protección CSRF en solicitudes GET
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                // Aquí puedes manejar la respuesta del servidor, como actualizar el estado para reflejar el cambio
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    };
     const handleSalaClick = (id) => {
         window.open(`/salas/${id}`, '_blank');
     };
+
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -98,13 +124,13 @@ export default function Welcome({ auth, laravelVersion, phpVersion, salas }) {
 
     return (
         <>
-            <Head title="Welcome" />
+            <Head title="Welcome"/>
 
             <div className="AudioPlay">
                 <a href="audio" target='_blank'>
                     <button type="button" className="btn_audio">Ir al reproductor de audio</button>
                 </a>
-            </div >
+            </div>
 
             <div className="barrafija">
                 <div className="topbar-left">
@@ -115,8 +141,9 @@ export default function Welcome({ auth, laravelVersion, phpVersion, salas }) {
                 <div>
                     <form method="get" action="" id="formularioBusquedaTopbar">
                         <div className="search-bar">
-                            <input type="text" id="busqueda" name="busqueda" placeholder="¿Qué quieres buscar?" className="buscartext" />
-                            <button type="submit" className="enviar-btn" id="enviarBtn" >Buscar</button>
+                            <input type="text" id="busqueda" name="busqueda" placeholder="¿Qué quieres buscar?"
+                                   className="buscartext"/>
+                            <button type="submit" className="enviar-btn" id="enviarBtn">Buscar</button>
                         </div>
                     </form>
                 </div>
@@ -124,9 +151,9 @@ export default function Welcome({ auth, laravelVersion, phpVersion, salas }) {
                     <a href="audio" target='_blank'>
                         <button type="button" className="btn_audio">Reproductor</button>
                     </a>
-                </div >
+                </div>
                 <div className="panel0">
-                    {auth.user ? (
+                    {user ? (
                         <Link
                             href={route('dashboard')}
                             className="panel"
@@ -409,28 +436,37 @@ export default function Welcome({ auth, laravelVersion, phpVersion, salas }) {
                         <h2>Resultados de la búsqueda:</h2>
                         <table>
                             <thead>
-                                <tr>
-                                    <th>Sala</th>
-                                    <th>Provincia</th>
-                                    <th>Municipio</th>
-                                    <th>Géneros</th>
-                                    <th>Aforo</th>
-                                </tr>
+                            <tr>
+                                <th>Sala</th>
+                                <th>Provincia</th>
+                                <th>Municipio</th>
+                                <th>Géneros</th>
+                                <th>Aforo</th>
+                            </tr>
                             </thead>
 
                             <tbody>
-                                {salasData
-                                    .sort((a, b) => a.sala.localeCompare(b.sala))
-                                    .map((sala, index) => (
-                                        <tr key={index} onClick={() => handleSalaClick(sala.id)}
+                            {salasData
+                                .sort((a, b) => a.sala.localeCompare(b.sala))
+                                .map((sala, index) => (
+                                    <tr key={index} onClick={() => handleSalaClick(sala.id)}
                                         className="hover-effect">
-                                            <td style={{ cursor: 'pointer' }}>{sala.sala}</td>
-                                            <td>{sala.provincia}</td>
-                                            <td>{sala.municipio}</td>
-                                            <td>{sala.genero}</td>
-                                            <td>{sala.aforo}</td>
-                                        </tr>
-                                    ))}
+                                        <td style={{cursor: 'pointer'}}>{sala.sala}</td>
+                                        <td>{sala.provincia}</td>
+                                        <td>{sala.municipio}</td>
+                                        <td>{sala.genero}</td>
+                                        <td>{sala.aforo}</td>
+                                        {user && (
+                                            <td>
+                                                <input type="checkbox"
+                                                       onChange={(e) => handleFavoritoChange(e, sala.id)}
+                                                       onClick={(e) => e.stopPropagation()}
+                                                />
+
+                                            </td>
+                                        )}
+                                    </tr>
+                                ))}
                             </tbody>
 
                             {/* <tbody>
@@ -448,7 +484,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion, salas }) {
                     </div>
                 )}
 
-            </div >
+            </div>
         </>
     );
 }

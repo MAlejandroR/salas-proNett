@@ -1,10 +1,13 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 
-export default function Dashboard({ auth }) {
+export default function Dashboard({ user, salas }) {
+    console.log("Usuario "+user.name );
+    console.log("Salas "+salas );
     return (
-        <AuthenticatedLayout
-            user={auth.user}
+
+
+    <AuthenticatedLayout
             header={<h2 className="dash0">Salas guardadas</h2>}
         >
             <Head title="Dashboard" />
@@ -12,7 +15,7 @@ export default function Dashboard({ auth }) {
             <div className="dash1">
                 <div className="dash2">
                     <div className="dash3">
-                        <div className="dash4">¡Hola {auth.user.name}!</div>
+                        <div className="dash4">¡Hola {user.name}!</div>
                     </div>
                 </div>
             </div>
