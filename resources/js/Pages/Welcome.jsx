@@ -1,7 +1,29 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Link, Head} from '@inertiajs/react';
 
-export default function Welcome({user, laravelVersion, phpVersion, salas}) {
+export default function Welcome({user, laravelVersion, phpVersion, salas, salasFavoritas}) {
+
+    const FavoritoSvg = () => (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="green" width="24px" height="24px">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+        </svg>
+    )
+    const NoFavoritoSvg = () => (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="red" width="24px" height="24px">
+            <path
+                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+
+    )
+    //Establecemos un array, pasa saber si cada sala es o no favorita
+    const [favoritos, setFavoritos] = useState({});
+    useEffect(() => {
+        const favoritosIniciales = {};
+        salasFavoritas.forEach(sala => {
+            favoritosIniciales[sala.id] = true; // Marca cada sala como favorita
+        });
+        setFavoritos(favoritosIniciales);
+    }, [salas]);
 
     const [salasData, setSalasData] = useState(salas || []);
     const [salaSeleccionada, setSalaSeleccionada] = useState('');
@@ -15,9 +37,24 @@ export default function Welcome({user, laravelVersion, phpVersion, salas}) {
     const [aforoBloqueado, setAforoBloqueado] = useState(false);
     const [mostrarTabla, setMostrarTabla] = useState(false);
     const handleFavoritoChange = (event, salaId) => {
-        const id = user.id;
+        event.stopPropagation();
+        console.log("sala Id" + salaId)
+        // console.log(favoritos[salaId])
+        // Convertimos el estado actual a booleano
+        const esFavoritoActual = favoritos[salaId];
+
+        // console.log(esFavoritoActual);
+
+        const esFavoritoNuevo = !esFavoritoActual; // Convertimos el estado actual a booleano
+        // console.log(esFavoritoNuevo);
+        const nuevosFavoritos = {...favoritos, [salaId]: esFavoritoNuevo}; // Actualizamos el estado de favorito para esta sala
+        setFavoritos(nuevosFavoritos);
+        // console.log(nuevosFavoritos);
+
         const isChecked = event.target.checked; //Si está o no checkeado
-        let ruta = isChecked ? "/addfavoritos" : "/delfavoritos";
+
+        const id = user.id;
+        let ruta = esFavoritoNuevo ? "/addfavoritos" : "/delfavoritos";
         ruta += `/${id}/${salaId}`;
         fetch(ruta, {
             method: "GET",
@@ -38,7 +75,7 @@ export default function Welcome({user, laravelVersion, phpVersion, salas}) {
             .catch((error) => {
                 console.error('Error:', error);
             });
-    };
+    }
     const handleSalaClick = (id) => {
         window.open(`/salas/${id}`, '_blank');
     };
@@ -442,6 +479,7 @@ export default function Welcome({user, laravelVersion, phpVersion, salas}) {
                                 <th>Municipio</th>
                                 <th>Géneros</th>
                                 <th>Aforo</th>
+                                {user && (<th>Favorito</th>)}
                             </tr>
                             </thead>
 
@@ -458,10 +496,9 @@ export default function Welcome({user, laravelVersion, phpVersion, salas}) {
                                         <td>{sala.aforo}</td>
                                         {user && (
                                             <td>
-                                                <input type="checkbox"
-                                                       onChange={(e) => handleFavoritoChange(e, sala.id)}
-                                                       onClick={(e) => e.stopPropagation()}
-                                                />
+                                                <button onClick={(e) => handleFavoritoChange(e, sala.id)}>
+                                                    {favoritos[sala.id] ? <FavoritoSvg/> : <NoFavoritoSvg/>}
+                                                </button>
 
                                             </td>
                                         )}

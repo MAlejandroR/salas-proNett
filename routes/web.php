@@ -30,7 +30,12 @@ Route::get('/salas/{id}', [SalaController::class, 'show'])->name('sala.show');
 Route::get('/', function () {
     $salas = App\Models\Sala::all();
     $user = auth()->user();
-    return Inertia::render('Welcome', compact("salas","user"));
+    $salasFavoritas=[];
+    if($user) {
+        $salasFavoritas = $user->salas()->get();
+        info("Salas favoritas de $user->id" . $salasFavoritas);
+    }
+    return Inertia::render('Welcome', compact("salas","user", "salasFavoritas"));
 })->name('welcome');
 
 //Route::get('/', function () {
@@ -44,7 +49,10 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     $user = auth()->user();
-    $salas = $user->salas();
+    if ($user) {
+        $salas = $user->salas()->get();
+        info("valor de salas $salas");
+    }
 
     return Inertia::render('Dashboard',compact('user','salas'));
 })->middleware(['auth', 'verified'])->name('dashboard');

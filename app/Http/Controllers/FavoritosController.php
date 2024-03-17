@@ -11,11 +11,13 @@ class FavoritosController extends Controller
     //
 
     public function add_favorito(Request $request,  User $user,Sala $sala){
-        $user->salas()->attach($user->id);
-        return response()->json("OK");
+        info("Usuario ".$user->id);
+        info("Sala ".$sala);
+        $user->salas()->attach($sala->id);
+        return response()->json("OK add!!! $user->id to $sala->id");
     }
     public function del_favorito(Request $request,  User $user,Sala $sala){
-        $user->salas()->detach($user->id);
-        return response()->json("OK");
+        $user->salas()->detach($sala->id);
+        return response()->json("OK del!!! $user->id to $sala->id");
     }
 }

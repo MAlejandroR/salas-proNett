@@ -12,7 +12,10 @@ class SalaController extends Controller
     {
         $salas = Sala::all();
         $user = auth()->user();
-        return (Inertia::render("Welcome", compact("salas", "user")));
+        $salasFavoritas=[];
+        if($user)
+            $salasFavoritas = $user->salas()->get();
+        return (Inertia::render("Welcome", compact("salas", "user", "salasFavoritas")));
     }
 
     public function show($id)
